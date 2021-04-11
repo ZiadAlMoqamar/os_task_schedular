@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gantt_chart/classes/process.dart';
 
 import 'components/chart.dart';
+import 'logic/os_logic.dart' as os_logic;
 
 void main() {
   runApp(MyApp());
@@ -37,14 +38,29 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    ///////////
+    var input = [
+      os_logic.InputProcess(id: 1, burstTime: 24),
+      os_logic.InputProcess(id: 2, burstTime: 3),
+      os_logic.InputProcess(id: 3, burstTime: 3),
+    ];
+    var obj = os_logic.FCFS(input);
+    print(obj.avgWaitingTime);
+    /////////////////
     return Scaffold(
       appBar: AppBar(
         title: Text('Chart'),
       ),
       body: Center(
-        child: Container(
-          height: 100,
-          child: Chart(procesess: procesess),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              height: 100,
+              child: Chart(procesess: procesess),
+            ),
+            Text(obj.avgWaitingTime.toString())
+          ],
         ),
       ),
     );
