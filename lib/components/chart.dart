@@ -48,7 +48,7 @@ class ProcessWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Tooltip(
       textStyle: TextStyle(fontSize: 16, color: Colors.white),
-      message: '$processTitle\n$start ~ $end',
+      message: 'P$processTitle\n$start ~ $end',
       child: Container(
         child: Column(
           children: [
@@ -58,7 +58,7 @@ class ProcessWidget extends StatelessWidget {
               decoration: BoxDecoration(border: Border.all(width: 1)),
               child: Center(
                 child: Text(
-                  processTitle,
+                  "P"+processTitle,
                   overflow: TextOverflow.clip,
                 ),
               ),

@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gantt_chart/classes/process.dart';
 
+import 'classes/process.dart';
 import 'components/chart.dart';
-import 'logic/os_logic.dart' as os_logic;
+import 'logic/fcfs_logic.dart' as fcfs_logic;
+import 'logic/sjf_logic.dart' as sjf_logic;
 
 void main() {
   runApp(MyApp());
@@ -26,25 +28,26 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Process> procesess = [
-    Process(processTitle: 'P1', startTime: 0, endTime: 4),
-    Process(processTitle: 'P2', startTime: 5, endTime: 50),
-    Process(processTitle: 'P3', startTime: 0, endTime: 5),
-    Process(processTitle: 'P3', startTime: 0, endTime: 5),
-    Process(processTitle: 'P3', startTime: 0, endTime: 5),
-    Process(processTitle: 'P3', startTime: 0, endTime: 5),
-    Process(processTitle: 'P3', startTime: 0, endTime: 5),
-  ];
+  // List<Process> procesess = [
+  //   Process(processTitle: 'P1', startTime: 0, endTime: 4),
+  //   Process(processTitle: 'P2', startTime: 5, endTime: 50),
+  //   Process(processTitle: 'P3', startTime: 0, endTime: 5),
+  //   Process(processTitle: 'P3', startTime: 0, endTime: 5),
+  //   Process(processTitle: 'P3', startTime: 0, endTime: 5),
+  //   Process(processTitle: 'P3', startTime: 0, endTime: 5),
+  //   Process(processTitle: 'P3', startTime: 0, endTime: 5),
+  // ];
 
   @override
   Widget build(BuildContext context) {
     ///////////
     var input = [
-      os_logic.InputProcess(id: 1, burstTime: 24),
-      os_logic.InputProcess(id: 2, burstTime: 3),
-      os_logic.InputProcess(id: 3, burstTime: 3),
+      fcfs_logic.InputProcess(id: 1, burstTime: 6),
+      fcfs_logic.InputProcess(id: 2, burstTime: 8),
+      fcfs_logic.InputProcess(id: 3, burstTime: 7),
+      fcfs_logic.InputProcess(id: 4, burstTime: 3),
     ];
-    var obj = os_logic.FCFS(input);
+    var obj = sjf_logic.SJF(input);
     print(obj.avgWaitingTime);
     /////////////////
     return Scaffold(
@@ -57,9 +60,15 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             Container(
               height: 100,
-              child: Chart(procesess: procesess),
+              child: Chart(
+                  procesess: obj.output.map((process) {
+                return Process(
+                    processTitle: process.id.toString(),
+                    startTime: process.waitingTime.toInt(),
+                    endTime: process.waitingTime.toInt()+process.burstTime.toInt());
+              }).toList()),
             ),
-            Text(obj.avgWaitingTime.toString())
+            Text("AVG Waiting time: " + obj.avgWaitingTime.toString())
           ],
         ),
       ),

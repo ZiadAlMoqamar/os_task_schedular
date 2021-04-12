@@ -28,19 +28,18 @@ class FCFS {
     List<InputProcess> output = [];
     for (var i = 0; i < input.length; i++) {
       output.add(InputProcess(
-          id: i,
+          id: input[i].id,
           burstTime: input[i].burstTime,
           waitingTime: calculateProcessWaitingTime(input, i)));
-      print(output[i].waitingTime);
+      
     }
     return output;
   }
 
-  double calculateProcessWaitingTime(
-      List<InputProcess> input, int processIndex) {
+  double calculateProcessWaitingTime(List<InputProcess> input, int processIndex) {
     var output = 0.0;
     if (processIndex != 0) {
-      for (var i = processIndex - 1; i > 0; i--) {
+      for (var i = processIndex - 1; i >= 0; i--) {
         output += input[i].burstTime;
       }
     }
