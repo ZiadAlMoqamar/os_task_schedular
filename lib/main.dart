@@ -62,6 +62,11 @@ class _MyHomePageState extends State<MyHomePage> {
   //     srtf_logic.InputProcess(id: 4, burstTime: 1, arrivalTime: 3),
   //     srtf_logic.InputProcess(id: 5, burstTime: 6, arrivalTime: 4),
   //     srtf_logic.InputProcess(id: 6, burstTime: 3, arrivalTime: 5),
+  // another one
+  // srtf_logic.InputProcess(id: 1, burstTime: 7, arrivalTime: 0),
+  // srtf_logic.InputProcess(id: 2, burstTime: 4, arrivalTime: 2),
+  // srtf_logic.InputProcess(id: 3, burstTime: 1, arrivalTime: 4),
+  // srtf_logic.InputProcess(id: 4, burstTime: 4, arrivalTime: 5),
   @override
   Widget build(BuildContext context) {
     ///////////
