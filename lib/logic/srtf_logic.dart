@@ -1,19 +1,15 @@
-//this is preemptive SJF
+//This is preemptive SJF logic
 
 import 'dart:core';
-
-import 'package:gantt_chart/logic/fcfs_logic.dart';
 
 class InputProcess {
   int id;
   int burstTime;
   int arrivalTime;
-  double waitingTime;
   InputProcess(
       {this.id = 0,
       this.burstTime = 0,
-      this.arrivalTime = 0,
-      this.waitingTime = 0});
+      this.arrivalTime = 0,});
 }
 
 class AvgOutputProcess {

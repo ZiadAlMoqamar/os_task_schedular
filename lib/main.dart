@@ -8,6 +8,8 @@ import 'classes/process.dart';
 import 'components/chart.dart';
 import 'constants.dart' as constants;
 import 'logic/srtf_logic.dart' as srtf_logic;
+import 'logic/non_preemp_priority_logic.dart' as non_preemp_priority_logic;
+import 'logic/rr_logic.dart' as rr_logic;
 
 void main() {
   runApp(MyApp());
@@ -37,20 +39,55 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  // doctoer example
+// srtf_logic.InputProcess(id: 1, burstTime: 8, arrivalTime: 0),
+//       srtf_logic.InputProcess(id: 2, burstTime: 4, arrivalTime: 1),
+//       srtf_logic.InputProcess(id: 3, burstTime: 9, arrivalTime: 2),
+//       srtf_logic.InputProcess(id: 4, burstTime: 5, arrivalTime: 3),
+// net example
+// srtf_logic.InputProcess(id: 1, burstTime: 3, arrivalTime: 0),
+  // srtf_logic.InputProcess(id: 2, burstTime: 2, arrivalTime: 0),
+  // srtf_logic.InputProcess(id: 3, burstTime: 1, arrivalTime: 2),
+  // srtf_logic.InputProcess(id: 4, burstTime: 2, arrivalTime: 3),
+  // another example
+  // srtf_logic.InputProcess(id: 1, burstTime: 4, arrivalTime: 0),
+  //     srtf_logic.InputProcess(id: 2, burstTime: 5, arrivalTime: 1),
+  //     srtf_logic.InputProcess(id: 3, burstTime: 2, arrivalTime: 2),
+  //     srtf_logic.InputProcess(id: 4, burstTime: 1, arrivalTime: 3),
+  //     srtf_logic.InputProcess(id: 5, burstTime: 6, arrivalTime: 4),
+  //     srtf_logic.InputProcess(id: 6, burstTime: 3, arrivalTime: 5),
+  // another one
+  // srtf_logic.InputProcess(id: 1, burstTime: 7, arrivalTime: 0),
+  // srtf_logic.InputProcess(id: 2, burstTime: 4, arrivalTime: 2),
+  // srtf_logic.InputProcess(id: 3, burstTime: 1, arrivalTime: 4),
+  // srtf_logic.InputProcess(id: 4, burstTime: 4, arrivalTime: 5),
+  // non_preemp_priority_logic.InputProcess(id: 1, burstTime: 10, priority: 3),
+  // non_preemp_priority_logic.InputProcess(id: 2, burstTime: 1, priority: 1),
+  // non_preemp_priority_logic.InputProcess(id: 3, burstTime: 2, priority: 4),
+  // non_preemp_priority_logic.InputProcess(id: 4, burstTime: 1, priority: 5),
+  // non_preemp_priority_logic.InputProcess(id: 5, burstTime: 5, priority: 2),
+  //  var input = [
+  //   rr_logic.InputProcess(id: 1, burstTime: 24),
+  //   rr_logic.InputProcess(id: 2, burstTime: 3),
+  //   rr_logic.InputProcess(id: 3, burstTime: 3),
+  // another example
+  //   rr_logic.InputProcess(id: 1, burstTime: 3),
+  // rr_logic.InputProcess(id: 2, burstTime: 4),
+  // rr_logic.InputProcess(id: 3, burstTime: 3),
+  // ];
+
+  // var obj = rr_logic.RR(input,4);
   @override
   Widget build(BuildContext context) {
     ///////////
     var input = [
-      srtf_logic.InputProcess(id: 1, burstTime: 7, arrivalTime: 0),
-      srtf_logic.InputProcess(id: 2, burstTime: 5, arrivalTime: 1),
-      srtf_logic.InputProcess(id: 3, burstTime: 3, arrivalTime: 2),
-      srtf_logic.InputProcess(id: 4, burstTime: 1, arrivalTime: 3),
-      srtf_logic.InputProcess(id: 5, burstTime: 2, arrivalTime: 4),
-      srtf_logic.InputProcess(id: 6, burstTime: 1, arrivalTime: 5),
+      rr_logic.InputProcess(id: 1, burstTime: 24),
+      rr_logic.InputProcess(id: 2, burstTime: 3),
+      rr_logic.InputProcess(id: 3, burstTime: 3),
     ];
 
-    var obj = srtf_logic.SRTF(input);
-    // print(obj.avgWaitingTime);
+    var obj = rr_logic.RR(input: input, timeQuantum: 4);
+    print(obj.avgWaitingTime);
     /////////////////
     return Scaffold(
       appBar: AppBar(
