@@ -74,23 +74,27 @@ class _MyHomePageState extends State<MyHomePage> {
   // non_preemp_priority_logic.InputProcess(id: 3, burstTime: 2, priority: 4),
   // non_preemp_priority_logic.InputProcess(id: 4, burstTime: 1, priority: 5),
   // non_preemp_priority_logic.InputProcess(id: 5, burstTime: 5, priority: 2),
-    //  var input = [
-    //   rr_logic.InputProcess(id: 1, burstTime: 24),
-    //   rr_logic.InputProcess(id: 2, burstTime: 3),
-    //   rr_logic.InputProcess(id: 3, burstTime: 3),
-    // ];
+  //  var input = [
+  //   rr_logic.InputProcess(id: 1, burstTime: 24),
+  //   rr_logic.InputProcess(id: 2, burstTime: 3),
+  //   rr_logic.InputProcess(id: 3, burstTime: 3),
+  // another example
+  //   rr_logic.InputProcess(id: 1, burstTime: 3),
+  // rr_logic.InputProcess(id: 2, burstTime: 4),
+  // rr_logic.InputProcess(id: 3, burstTime: 3),
+  // ];
 
-    // var obj = rr_logic.RR(input,4);
+  // var obj = rr_logic.RR(input,4);
   @override
   Widget build(BuildContext context) {
     ///////////
-       var input = [
+    var input = [
       rr_logic.InputProcess(id: 1, burstTime: 24),
       rr_logic.InputProcess(id: 2, burstTime: 3),
       rr_logic.InputProcess(id: 3, burstTime: 3),
     ];
 
-    var obj = rr_logic.RR(input,4);
+    var obj = rr_logic.RR(input: input, timeQuantum: 4);
     print(obj.avgWaitingTime);
     /////////////////
     return Scaffold(
