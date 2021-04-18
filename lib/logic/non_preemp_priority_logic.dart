@@ -1,38 +1,36 @@
-//this is a non-preemptive SJF
+//this is a non-preemptive Priority
 
 import 'dart:core';
 
 class InputProcess {
   int id;
   int burstTime;
+  int priority;
   int endBurstTime;
   double waitingTime;
   InputProcess(
-      {this.id = 0,
-      this.burstTime = 0,
-      this.endBurstTime = 0,
-      this.waitingTime = 0});
+      {this.id = 0, this.burstTime= 0,this.endBurstTime = 0, this.priority = 0, this.waitingTime = 0});
 }
-class SJF {
+
+class NonPreemptivePriority {
   var avgWaitingTime;
   List<InputProcess> input = [];
   List<InputProcess> output = [];
 
-  SJF(List<InputProcess> input) {
+  NonPreemptivePriority(List<InputProcess> input) {
     output = prepareOutput(input);
     avgWaitingTime = calculateAvgWaitingTime(output);
   }
 
   List<InputProcess> prepareOutput(List<InputProcess> input) {
-    input.sort((a, b) => a.burstTime.compareTo(b.burstTime));
+    input.sort((a, b) => a.priority.compareTo(b.priority));
     List<InputProcess> output = [];
     for (var i = 0; i < input.length; i++) {
       output.add(InputProcess(
           id: input[i].id,
           burstTime: input[i].burstTime,
           waitingTime: calculateProcessWaitingTime(input, i),
-          endBurstTime: input[i].burstTime +
-              calculateProcessWaitingTime(input, i).toInt()));
+          endBurstTime: input[i].burstTime + calculateProcessWaitingTime(input, i).toInt()));
     }
     return output;
   }

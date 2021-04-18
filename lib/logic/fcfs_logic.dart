@@ -3,8 +3,13 @@ import 'dart:core';
 class InputProcess {
   int id;
   int burstTime;
+  int endBurstTime;
   double waitingTime;
-  InputProcess({this.id = 0, this.burstTime = 0, this.waitingTime = 0});
+  InputProcess(
+      {this.id = 0,
+      this.burstTime = 0,
+      this.endBurstTime = 0,
+      this.waitingTime = 0});
 }
 
 class FCFS {
@@ -30,13 +35,15 @@ class FCFS {
       output.add(InputProcess(
           id: input[i].id,
           burstTime: input[i].burstTime,
-          waitingTime: calculateProcessWaitingTime(input, i)));
-      
+          waitingTime: calculateProcessWaitingTime(input, i),
+          endBurstTime: input[i].burstTime +
+              calculateProcessWaitingTime(input, i).toInt()));
     }
     return output;
   }
 
-  double calculateProcessWaitingTime(List<InputProcess> input, int processIndex) {
+  double calculateProcessWaitingTime(
+      List<InputProcess> input, int processIndex) {
     var output = 0.0;
     if (processIndex != 0) {
       for (var i = processIndex - 1; i >= 0; i--) {
