@@ -1,4 +1,4 @@
-//this is a non-preemptive Priority
+//This is a non-preemptive Priority logic
 
 import 'dart:core';
 

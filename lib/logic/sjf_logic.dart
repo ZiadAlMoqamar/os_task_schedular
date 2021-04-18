@@ -1,4 +1,4 @@
-//this is a non-preemptive SJF
+//This is a non-preemptive SJF logic
 
 import 'dart:core';
 
