@@ -24,21 +24,24 @@ class Chart extends StatelessWidget {
 
     return Scrollbar(
       isAlwaysShown: true,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        shrinkWrap: true,
-        children: procesess.map((process) {
-          i++;
+      child: Container(
+        child: ListView(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          scrollDirection: Axis.horizontal,
+          shrinkWrap: true,
+          children: procesess.map((process) {
+            i++;
 
-          return ProcessWidget(
-            width: calcWidth(process, i),
-            start: (i == 1 ? 0 : procesess[i - 2].endTime),
-            end: process.endTime,
-            processTitle: process.processTitle,
-            first: (i == 1),
-            last: (procesess.length == i),
-          );
-        }).toList(),
+            return ProcessWidget(
+              width: calcWidth(process, i),
+              start: (i == 1 ? 0 : procesess[i - 2].endTime),
+              end: process.endTime,
+              processTitle: process.processTitle,
+              first: (i == 1),
+              last: (procesess.length == i),
+            );
+          }).toList(),
+        ),
       ),
     );
   }

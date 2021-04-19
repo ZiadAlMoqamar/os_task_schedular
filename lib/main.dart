@@ -79,45 +79,18 @@ class _MyHomePageState extends State<MyHomePage> {
   // var obj = rr_logic.RR(input,4);
   @override
   Widget build(BuildContext context) {
-    ///////////
-    var input = [
-      rr_logic.InputProcess(id: 1, burstTime: 24),
-      rr_logic.InputProcess(id: 2, burstTime: 3),
-      rr_logic.InputProcess(id: 3, burstTime: 3),
-    ];
-
-    var obj = rr_logic.RR(input: input, timeQuantum: 4);
-    print(obj.avgWaitingTime);
-    /////////////////
     return Scaffold(
       appBar: AppBar(
         title: Text('Chart'),
       ),
-      body: ListView(
-        children: [
-          InputScreen(technique: widget.technique, change: changeTechnique),
-          Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    height: 100,
-                    child: Chart(
-                        procesess: obj.output.map((process) {
-                      return Process(
-                          processTitle: process.id.toString(),
-                          startTime: 0,
-                          endTime: process.endBurstTime.toInt());
-                    }).toList()),
-                  ),
-                  Text("AVG Waiting time: ${widget.technique}" +
-                      obj.avgWaitingTime.toString())
-                ],
-              ),
-            ),
-          ),
-        ],
+      body: Container(
+        child: Row(
+          children: [
+            Expanded(
+                child: InputScreen(
+                    technique: widget.technique, change: changeTechnique)),
+          ],
+        ),
       ),
     );
   }
