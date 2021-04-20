@@ -1,8 +1,12 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gantt_chart/classes/process.dart';
 import 'package:gantt_chart/components/chart.dart';
-import 'package:gantt_chart/constants.dart';
-import 'package:gantt_chart/logic/fcfs_logic.dart' as fcfs;
+import 'package:gantt_chart/components/technique_views/fcfs_view.dart';
+import 'package:gantt_chart/components/technique_views/non_preem_priority_view.dart';
+import 'package:gantt_chart/components/technique_views/rr_view.dart';
+import 'package:gantt_chart/components/technique_views/sjf.dart';
+import 'package:gantt_chart/components/technique_views/srtf_view.dart';
 
 class InputScreen extends StatefulWidget {
   String technique;
@@ -44,6 +48,14 @@ class _InputScreenState extends State<InputScreen> {
       case "FCFS":
         return FCFSUI();
         break;
+      case "Preemptive SJF":
+        return SRTFUI();
+      case "Non-preemptive SJF":
+        return SJFUI();
+      case "Non-preemptive priority":
+        return NonPreemPriorityUI();
+      case 'Round Robin':
+        return RoundRobinUI();
       default:
         return Container();
     }
@@ -82,198 +94,11 @@ class _InputScreenState extends State<InputScreen> {
           ),
         ),
         Expanded(
-            child: Container(
-                margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                child: selectTechnequeView())),
+          child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: selectTechnequeView()),
+        ),
       ],
     );
-  }
-}
-
-class FCFSUI extends StatefulWidget {
-  @override
-  _FCFSUIState createState() => _FCFSUIState();
-}
-
-class _FCFSUIState extends State<FCFSUI> {
-  TextEditingController numberOfProcesses = TextEditingController();
-  var controllers;
-  List<fcfs.InputProcess> input = [];
-  void generateInput() {
-    input = [];
-    int numOfProcesses = numberOfProcesses.text.length == 0
-        ? 0
-        : int.parse(numberOfProcesses.text);
-    for (var i = 0; i < numOfProcesses; i++) {
-      input.add(fcfs.InputProcess(id: i, burstTime: 0, waitingTime: 0));
-    }
-  }
-
-  void generateControllers() {
-    int numOfProcesses = numberOfProcesses.text.length == 0
-        ? 0
-        : int.parse(numberOfProcesses.text);
-    controllers =
-        List.generate(numOfProcesses, (index) => List(3), growable: false);
-    for (var i = 0; i < numOfProcesses; i++) {
-      for (var j = 0; j < 3; j++) {
-        controllers[i][j] = TextEditingController();
-      }
-    }
-  }
-
-  void clearControllers() {
-    int numOfProcesses = numberOfProcesses.text.length == 0
-        ? 0
-        : int.parse(numberOfProcesses.text);
-
-    for (var i = 0; i < numOfProcesses; i++) {
-      for (var j = 0; j < 3; j++) {
-        controllers[i][j].clear();
-      }
-    }
-  }
-
-  TextEditingController general = TextEditingController();
-
-  Widget inputField(Function onChanged, TextEditingController controller) {
-    return Container(
-      width: 50,
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(),
-        textAlign: TextAlign.center,
-        onChanged: onChanged,
-      ),
-    );
-  }
-
-  var obj;
-  double avgWaitingTime;
-  List<fcfs.InputProcess> output = [];
-  @override
-  Widget build(BuildContext context) {
-    return Column(children: [
-      Container(
-        child: Row(
-          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Number of processes'),
-                Container(
-                  width: 40,
-                  height: 40,
-                  child: TextField(
-                    controller: numberOfProcesses,
-                    onSubmitted: (s) {
-                      setState(() {
-                        generateInput();
-                        generateControllers();
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-      SizedBox(height: 25),
-      Row(
-        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text('Title'),
-          SizedBox(width: 60),
-          Text('Burst time'),
-        ],
-      ),
-      // user input
-      Container(
-          height: 250,
-          child: Scrollbar(
-            isAlwaysShown: true,
-            child: ListView.builder(
-                itemCount:
-                    numberOfProcesses.text.length == 0 ? 0 : input.length,
-                itemBuilder: (context, index) {
-                  return Row(
-                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      inputField((s) {
-                        setState(() {
-                          input[index].id = int.parse(s);
-                        });
-                      }, controllers[index][0]),
-                      SizedBox(width: 50),
-                      inputField((s) {
-                        setState(() {
-                          input[index].burstTime = int.parse(s);
-                        });
-                      }, controllers[index][1]),
-                      // SizedBox(width: 50),
-                      // inputField((s) {
-                      //   setState(() {
-                      //     input[index].waitingTime = double.parse(s);
-                      //   });
-                      // }, controllers[index][2]),
-                    ],
-                  );
-                }),
-          )),
-      Container(
-        // margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: Row(
-          children: [
-            RaisedButton(
-              child: Text('Calculate'),
-              onPressed: () {
-                if (input[0].burstTime != 0)
-                  setState(() {
-                    obj = fcfs.FCFS(input);
-                    output = obj.output;
-                    avgWaitingTime = obj.avgWaitingTime;
-                  });
-              },
-            ),
-            SizedBox(width: 25),
-            RaisedButton(
-              child: Text('Clear'),
-              onPressed: () {
-                setState(() {
-                  generateInput();
-                  clearControllers();
-                  output = [];
-                });
-              },
-            )
-          ],
-        ),
-      ),
-      SizedBox(height: 40),
-      Center(
-        child: output.length == 0
-            ? Container()
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    height: 100,
-                    child: Chart(
-                        procesess: output.map((process) {
-                      return Process(
-                          processTitle: process.id.toString(),
-                          startTime: 0,
-                          endTime: process.endBurstTime.toInt());
-                    }).toList()),
-                  ),
-                  Text("AVG Waiting time: " + avgWaitingTime.toString()),
-                ],
-              ),
-      ),
-    ]);
   }
 }
