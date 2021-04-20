@@ -19,7 +19,9 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
     input = [];
     int numOfProcesses = numberOfProcesses.text.length == 0
         ? 0
-        : int.parse(numberOfProcesses.text);
+        : double.tryParse(numberOfProcesses.text) == null
+            ? 0
+            : int.tryParse(numberOfProcesses.text);
     for (var i = 0; i < numOfProcesses; i++) {
       input.add(
           non_preem_priority.InputProcess(id: i, burstTime: 0, priority: 0));
@@ -29,7 +31,9 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
   void generateControllers() {
     int numOfProcesses = numberOfProcesses.text.length == 0
         ? 0
-        : int.parse(numberOfProcesses.text);
+        : double.tryParse(numberOfProcesses.text) == null
+            ? 0
+            : int.tryParse(numberOfProcesses.text);
     controllers = List.generate(numOfProcesses, (index) => List(numberOfFields),
         growable: false);
     for (var i = 0; i < numOfProcesses; i++) {
@@ -43,7 +47,9 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
   void generatevalidators() {
     int numOfProcesses = numberOfProcesses.text.length == 0
         ? 0
-        : int.parse(numberOfProcesses.text);
+        : double.tryParse(numberOfProcesses.text) == null
+            ? 0
+            : int.tryParse(numberOfProcesses.text);
     validators = List.generate(numOfProcesses, (index) => List(numberOfFields),
         growable: false);
     for (var i = 0; i < numOfProcesses; i++) {
@@ -56,8 +62,9 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
   void clearControllers() {
     int numOfProcesses = numberOfProcesses.text.length == 0
         ? 0
-        : int.parse(numberOfProcesses.text);
-
+        : double.tryParse(numberOfProcesses.text) == null
+            ? 0
+            : int.tryParse(numberOfProcesses.text);
     for (var i = 0; i < numOfProcesses; i++) {
       for (var j = 0; j < numberOfFields; j++) {
         controllers[i][j].clear();
@@ -68,7 +75,9 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
   void emptyControllers() {
     int numOfProcesses = numberOfProcesses.text.length == 0
         ? 0
-        : int.parse(numberOfProcesses.text);
+        : double.tryParse(numberOfProcesses.text) == null
+            ? 0
+            : int.tryParse(numberOfProcesses.text);
 
     for (var i = 0; i < numOfProcesses; i++) {
       for (var j = 0; j < numberOfFields; j++) {
@@ -89,13 +98,13 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
         decoration: InputDecoration(
           fillColor: Color(0xfff0f2f5),
           filled: true,
-          errorText: controller.text.length == 0
-              ? null
-              : controller.text.isEmpty
+          errorText: valid
+              ? controller.text.length == 0
                   ? 'Empty'
                   : double.tryParse(controller.text) == null
                       ? 'Invalid'
-                      : null,
+                      : null
+              : null,
           border: OutlineInputBorder(),
         ),
         textAlign: TextAlign.center,
@@ -129,6 +138,11 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
                       height: 50,
                       child: TextField(
                         decoration: InputDecoration(
+                          // errorText: numberOfProcesses.text.length == 0
+                          //     ? null
+                          //     : double.tryParse(numberOfProcesses.text) == null
+                          //         ? 'Invalid'
+                          //         : null,
                           fillColor: Color(0xfff0f2f5),
                           filled: true,
                           border: OutlineInputBorder(),
@@ -136,11 +150,18 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
                         textAlign: TextAlign.center,
                         controller: numberOfProcesses,
                         onChanged: (s) {
-                          setState(() {
-                            generateInput();
-                            generateControllers();
-                            generatevalidators();
-                          });
+                          if (double.tryParse(numberOfProcesses.text) != null)
+                            setState(() {
+                              generateInput();
+                              generateControllers();
+                              generatevalidators();
+                            });
+                          else
+                            setState(() {
+                              generateInput();
+                              generateControllers();
+                              generatevalidators();
+                            });
                         },
                       ),
                     ),
@@ -211,19 +232,19 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
                           SizedBox(width: 25),
                           inputField((s) {
                             setState(() {
-                              input[index].id = int.parse(s);
+                              input[index].id = int.tryParse(s);
                             });
                           }, controllers[index][0], validators[index][0]),
                           SizedBox(width: 25),
                           inputField((s) {
                             setState(() {
-                              input[index].burstTime = int.parse(s);
+                              input[index].burstTime = int.tryParse(s);
                             });
                           }, controllers[index][1], validators[index][1]),
                           SizedBox(width: 25),
                           inputField((s) {
                             setState(() {
-                              input[index].priority = int.parse(s);
+                              input[index].priority = int.tryParse(s);
                             });
                           }, controllers[index][2], validators[index][2]),
                         ],
@@ -263,7 +284,9 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
                     });
                     int numOfProcesses = numberOfProcesses.text.length == 0
                         ? 0
-                        : int.parse(numberOfProcesses.text);
+                        : double.tryParse(numberOfProcesses.text) == null
+                            ? 0
+                            : int.tryParse(numberOfProcesses.text);
                     for (var i = 0; i < numOfProcesses; i++) {
                       for (var j = 0; j < numberOfFields; j++) {
                         if (controllers[i][j].text.isEmpty ||

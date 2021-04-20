@@ -19,7 +19,9 @@ class _SJFUIState extends State<SJFUI> {
     input = [];
     int numOfProcesses = numberOfProcesses.text.length == 0
         ? 0
-        : int.parse(numberOfProcesses.text);
+        : double.tryParse(numberOfProcesses.text) == null
+            ? 0
+            : int.tryParse(numberOfProcesses.text);
     for (var i = 0; i < numOfProcesses; i++) {
       input.add(sjf.InputProcess(id: i, burstTime: 0));
     }
@@ -28,7 +30,9 @@ class _SJFUIState extends State<SJFUI> {
   void generateControllers() {
     int numOfProcesses = numberOfProcesses.text.length == 0
         ? 0
-        : int.parse(numberOfProcesses.text);
+        : double.tryParse(numberOfProcesses.text) == null
+            ? 0
+            : int.tryParse(numberOfProcesses.text);
     controllers = List.generate(numOfProcesses, (index) => List(numberOfFields),
         growable: false);
     for (var i = 0; i < numOfProcesses; i++) {
@@ -42,7 +46,9 @@ class _SJFUIState extends State<SJFUI> {
   void generatevalidators() {
     int numOfProcesses = numberOfProcesses.text.length == 0
         ? 0
-        : int.parse(numberOfProcesses.text);
+        : double.tryParse(numberOfProcesses.text) == null
+            ? 0
+            : int.tryParse(numberOfProcesses.text);
     validators = List.generate(numOfProcesses, (index) => List(numberOfFields),
         growable: false);
     for (var i = 0; i < numOfProcesses; i++) {
@@ -55,7 +61,9 @@ class _SJFUIState extends State<SJFUI> {
   void clearControllers() {
     int numOfProcesses = numberOfProcesses.text.length == 0
         ? 0
-        : int.parse(numberOfProcesses.text);
+        : double.tryParse(numberOfProcesses.text) == null
+            ? 0
+            : int.tryParse(numberOfProcesses.text);
 
     for (var i = 0; i < numOfProcesses; i++) {
       for (var j = 0; j < numberOfFields; j++) {
@@ -67,7 +75,9 @@ class _SJFUIState extends State<SJFUI> {
   void emptyControllers() {
     int numOfProcesses = numberOfProcesses.text.length == 0
         ? 0
-        : int.parse(numberOfProcesses.text);
+        : double.tryParse(numberOfProcesses.text) == null
+            ? 0
+            : int.tryParse(numberOfProcesses.text);
 
     for (var i = 0; i < numOfProcesses; i++) {
       for (var j = 0; j < numberOfFields; j++) {
@@ -89,12 +99,12 @@ class _SJFUIState extends State<SJFUI> {
           fillColor: Color(0xfff0f2f5),
           filled: true,
           errorText: valid
-              ? null
-              : controller.text.isEmpty
+              ? controller.text.length == 0
                   ? 'Empty'
                   : double.tryParse(controller.text) == null
                       ? 'Invalid'
-                      : null,
+                      : null
+              : null,
           border: OutlineInputBorder(),
         ),
         textAlign: TextAlign.center,
@@ -128,6 +138,11 @@ class _SJFUIState extends State<SJFUI> {
                       height: 50,
                       child: TextField(
                         decoration: InputDecoration(
+                          // errorText: numberOfProcesses.text.length == 0
+                          //     ? null
+                          //     : double.tryParse(numberOfProcesses.text) == null
+                          //         ? 'Invalid'
+                          //         : null,
                           fillColor: Color(0xfff0f2f5),
                           filled: true,
                           border: OutlineInputBorder(),
@@ -135,11 +150,18 @@ class _SJFUIState extends State<SJFUI> {
                         textAlign: TextAlign.center,
                         controller: numberOfProcesses,
                         onChanged: (s) {
-                          setState(() {
-                            generateInput();
-                            generateControllers();
-                            generatevalidators();
-                          });
+                          if (double.tryParse(numberOfProcesses.text) != null)
+                            setState(() {
+                              generateInput();
+                              generateControllers();
+                              generatevalidators();
+                            });
+                          else
+                            setState(() {
+                              generateInput();
+                              generateControllers();
+                              generatevalidators();
+                            });
                         },
                       ),
                     ),
@@ -202,13 +224,13 @@ class _SJFUIState extends State<SJFUI> {
                           SizedBox(width: 25),
                           inputField((s) {
                             setState(() {
-                              input[index].id = int.parse(s);
+                              input[index].id = int.tryParse(s);
                             });
                           }, controllers[index][0], validators[index][0]),
                           SizedBox(width: 25),
                           inputField((s) {
                             setState(() {
-                              input[index].burstTime = int.parse(s);
+                              input[index].burstTime = int.tryParse(s);
                             });
                           }, controllers[index][1], validators[index][1]),
                           // SizedBox(width: 50),
@@ -254,7 +276,9 @@ class _SJFUIState extends State<SJFUI> {
                     });
                     int numOfProcesses = numberOfProcesses.text.length == 0
                         ? 0
-                        : int.parse(numberOfProcesses.text);
+                        : double.tryParse(numberOfProcesses.text) == null
+                            ? 0
+                            : int.tryParse(numberOfProcesses.text);
                     for (var i = 0; i < numOfProcesses; i++) {
                       for (var j = 0; j < numberOfFields; j++) {
                         if (controllers[i][j].text.isEmpty ||

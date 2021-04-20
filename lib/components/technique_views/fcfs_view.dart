@@ -18,7 +18,9 @@ class _FCFSUIState extends State<FCFSUI> {
     input = [];
     int numOfProcesses = numberOfProcesses.text.length == 0
         ? 0
-        : int.parse(numberOfProcesses.text);
+        : double.tryParse(numberOfProcesses.text) == null
+            ? 0
+            : int.tryParse(numberOfProcesses.text);
     for (var i = 0; i < numOfProcesses; i++) {
       input.add(fcfs.InputProcess(id: i, burstTime: 0));
     }
@@ -27,7 +29,9 @@ class _FCFSUIState extends State<FCFSUI> {
   void generateControllers() {
     int numOfProcesses = numberOfProcesses.text.length == 0
         ? 0
-        : int.parse(numberOfProcesses.text);
+        : double.tryParse(numberOfProcesses.text) == null
+            ? 0
+            : int.tryParse(numberOfProcesses.text);
     controllers = List.generate(numOfProcesses, (index) => List(numberOfFields),
         growable: false);
     for (var i = 0; i < numOfProcesses; i++) {
@@ -41,7 +45,9 @@ class _FCFSUIState extends State<FCFSUI> {
   void generatevalidators() {
     int numOfProcesses = numberOfProcesses.text.length == 0
         ? 0
-        : int.parse(numberOfProcesses.text);
+        : double.tryParse(numberOfProcesses.text) == null
+            ? 0
+            : int.tryParse(numberOfProcesses.text);
     validators = List.generate(numOfProcesses, (index) => List(numberOfFields),
         growable: false);
     for (var i = 0; i < numOfProcesses; i++) {
@@ -54,7 +60,9 @@ class _FCFSUIState extends State<FCFSUI> {
   void clearControllers() {
     int numOfProcesses = numberOfProcesses.text.length == 0
         ? 0
-        : int.parse(numberOfProcesses.text);
+        : double.tryParse(numberOfProcesses.text) == null
+            ? 0
+            : int.tryParse(numberOfProcesses.text);
 
     for (var i = 0; i < numOfProcesses; i++) {
       for (var j = 0; j < numberOfFields; j++) {
@@ -66,7 +74,9 @@ class _FCFSUIState extends State<FCFSUI> {
   void emptyControllers() {
     int numOfProcesses = numberOfProcesses.text.length == 0
         ? 0
-        : int.parse(numberOfProcesses.text);
+        : double.tryParse(numberOfProcesses.text) == null
+            ? 0
+            : int.tryParse(numberOfProcesses.text);
 
     for (var i = 0; i < numOfProcesses; i++) {
       for (var j = 0; j < numberOfFields; j++) {
@@ -88,12 +98,12 @@ class _FCFSUIState extends State<FCFSUI> {
           fillColor: Color(0xfff0f2f5),
           filled: true,
           errorText: valid
-              ? null
-              : controller.text.isEmpty
+              ? controller.text.length == 0
                   ? 'Empty'
                   : double.tryParse(controller.text) == null
                       ? 'Invalid'
-                      : null,
+                      : null
+              : null,
           border: OutlineInputBorder(),
         ),
         textAlign: TextAlign.center,
@@ -117,7 +127,7 @@ class _FCFSUIState extends State<FCFSUI> {
               // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(width: 40),
+                SizedBox(width: 30),
                 Row(
                   children: [
                     Text('Number of processes:'),
@@ -127,6 +137,11 @@ class _FCFSUIState extends State<FCFSUI> {
                       height: 50,
                       child: TextField(
                         decoration: InputDecoration(
+                          // errorText: numberOfProcesses.text.length == 0
+                          //     ? null
+                          //     : double.tryParse(numberOfProcesses.text) == null
+                          //         ? 'Invalid'
+                          //         : null,
                           fillColor: Color(0xfff0f2f5),
                           filled: true,
                           border: OutlineInputBorder(),
@@ -134,11 +149,18 @@ class _FCFSUIState extends State<FCFSUI> {
                         textAlign: TextAlign.center,
                         controller: numberOfProcesses,
                         onChanged: (s) {
-                          setState(() {
-                            generateInput();
-                            generateControllers();
-                            generatevalidators();
-                          });
+                          if (double.tryParse(numberOfProcesses.text) != null)
+                            setState(() {
+                              generateInput();
+                              generateControllers();
+                              generatevalidators();
+                            });
+                          else
+                            setState(() {
+                              generateInput();
+                              generateControllers();
+                              generatevalidators();
+                            });
                         },
                       ),
                     ),
@@ -201,19 +223,19 @@ class _FCFSUIState extends State<FCFSUI> {
                           SizedBox(width: 25),
                           inputField((s) {
                             setState(() {
-                              input[index].id = int.parse(s);
+                              input[index].id = int.tryParse(s);
                             });
                           }, controllers[index][0], validators[index][0]),
                           SizedBox(width: 25),
                           inputField((s) {
                             setState(() {
-                              input[index].burstTime = int.parse(s);
+                              input[index].burstTime = int.tryParse(s);
                             });
                           }, controllers[index][1], validators[index][1]),
                           // SizedBox(width: 50),
                           // inputField((s) {
                           //   setState(() {
-                          //     input[index].waitingTime = double.parse(s);
+                          //     input[index].waitingTime = double.tryParse(s);
                           //   });
                           // }, controllers[index][2],validators[index][2]),
                         ],
@@ -253,7 +275,9 @@ class _FCFSUIState extends State<FCFSUI> {
                     });
                     int numOfProcesses = numberOfProcesses.text.length == 0
                         ? 0
-                        : int.parse(numberOfProcesses.text);
+                        : double.tryParse(numberOfProcesses.text) == null
+                            ? 0
+                            : int.tryParse(numberOfProcesses.text);
                     for (var i = 0; i < numOfProcesses; i++) {
                       for (var j = 0; j < numberOfFields; j++) {
                         if (controllers[i][j].text.isEmpty ||
