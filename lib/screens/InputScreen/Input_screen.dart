@@ -4,6 +4,7 @@ import 'package:gantt_chart/classes/process.dart';
 import 'package:gantt_chart/components/chart.dart';
 import 'package:gantt_chart/components/technique_views/fcfs_view.dart';
 import 'package:gantt_chart/components/technique_views/non_preem_priority_view.dart';
+import 'package:gantt_chart/components/technique_views/preemp_priority_view.dart';
 import 'package:gantt_chart/components/technique_views/rr_view.dart';
 import 'package:gantt_chart/components/technique_views/sjf.dart';
 import 'package:gantt_chart/components/technique_views/srtf_view.dart';
@@ -56,6 +57,8 @@ class _InputScreenState extends State<InputScreen> {
         return NonPreemPriorityUI();
       case 'Round Robin':
         return RoundRobinUI();
+      case 'Preemptive priority':
+        return PreempPriority();
       default:
         return Container();
     }
