@@ -292,7 +292,7 @@ class _PreempPriorityState extends State<PreempPriority> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      'Calculate',
+                      "Draw",
                       style: TextStyle(fontSize: 17),
                     ),
                   ),

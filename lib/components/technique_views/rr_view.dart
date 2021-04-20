@@ -283,7 +283,7 @@ class _RoundRobinUIState extends State<RoundRobinUI> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      'Calculate',
+                      "Draw",
                       style: TextStyle(fontSize: 17),
                     ),
                   ),

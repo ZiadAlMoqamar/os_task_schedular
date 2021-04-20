@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'gantt_chart',
       home: MyHomePage(),
     );
   }
@@ -34,10 +34,19 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xffffffff),
-      appBar: AppBar(
-        title: Text('Chart'),
+      // appBar: AppBar(
+      //   title: Text('gantt_chart'),
+      // ),
+      body: SingleChildScrollView(
+        // scrollDirection: Axis.horizontal,
+        child: SingleChildScrollView(
+          // scrollDirection: Axis.vertical,
+          child: Scrollbar(
+            child: InputScreen(
+                technique: widget.technique, change: changeTechnique),
+          ),
+        ),
       ),
-      body: InputScreen(technique: widget.technique, change: changeTechnique),
     );
   }
 }

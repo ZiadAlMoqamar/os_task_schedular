@@ -257,7 +257,7 @@ class _FCFSUIState extends State<FCFSUI> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      'Calculate',
+                      "Draw",
                       style: TextStyle(fontSize: 17),
                     ),
                   ),

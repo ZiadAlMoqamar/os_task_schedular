@@ -258,7 +258,7 @@ class _SJFUIState extends State<SJFUI> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      'Calculate',
+                      "Draw",
                       style: TextStyle(fontSize: 17),
                     ),
                   ),
