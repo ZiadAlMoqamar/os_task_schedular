@@ -39,7 +39,11 @@ class _InputScreenState extends State<InputScreen> {
                 widget.technique = selectedTechnique;
               });
             }),
-        Text(selectedTechnique)
+        Expanded(
+            child: Text(
+          selectedTechnique,
+          overflow: TextOverflow.clip,
+        ))
       ],
     );
   }
@@ -68,7 +72,9 @@ class _InputScreenState extends State<InputScreen> {
   Widget build(BuildContext context) {
     return Row(
       children: [
+        // Radio buttons
         Container(
+          width: MediaQuery.of(context).size.width / 6,
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           decoration: BoxDecoration(
@@ -79,27 +85,30 @@ class _InputScreenState extends State<InputScreen> {
               ),
             ),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Choose technique',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 5),
-              Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children:
-                      availableTechniques.map((e) => RadioBtn(e)).toList()),
-            ],
+          child: Expanded(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                      Text(
+                        'Choose technique',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 5),
+                    ] +
+                    availableTechniques.map((e) => RadioBtn(e)).toList()),
           ),
         ),
         Expanded(
-          child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: selectTechnequeView()),
+          child: Transform.translate(
+            offset: Offset(-100, 0),
+            child: SingleChildScrollView(
+              child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  child: selectTechnequeView()),
+            ),
+          ),
         ),
       ],
     );

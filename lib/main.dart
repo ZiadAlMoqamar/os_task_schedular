@@ -1,8 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gantt_chart/screens/InputScreen/Input_screen.dart';
 
-void main() {
+void main()  {
   runApp(MyApp());
 }
 
@@ -37,16 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // appBar: AppBar(
       //   title: Text('gantt_chart'),
       // ),
-      body: SingleChildScrollView(
-        // scrollDirection: Axis.horizontal,
-        child: SingleChildScrollView(
-          // scrollDirection: Axis.vertical,
-          child: Scrollbar(
-            child: InputScreen(
-                technique: widget.technique, change: changeTechnique),
-          ),
-        ),
-      ),
+      body: InputScreen(technique: widget.technique, change: changeTechnique),
     );
   }
 }
