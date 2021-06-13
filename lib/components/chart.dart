@@ -23,7 +23,6 @@ class Chart extends StatelessWidget {
     }
 
     return Scrollbar(
-      isAlwaysShown: true,
       child: Container(
         child: ListView(
           padding: EdgeInsets.symmetric(horizontal: 8),
@@ -113,7 +112,7 @@ class ProcessWidget extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  "P" + processTitle,
+                  (processTitle == "idle" ? '' : "P") + processTitle,
                   overflow: TextOverflow.clip,
                 ),
               ),

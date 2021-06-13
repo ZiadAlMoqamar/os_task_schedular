@@ -2,138 +2,99 @@
 
 import 'dart:core';
 
-class InputProcess {
+import 'package:gantt_chart/classes/process.dart';
+import 'dart:math';
+
+class PreemPriorityInputProcess {
   int id;
   int burstTime;
   int priority;
-  int endBurstTime;
-  double waitingTime;
-  InputProcess(
-      {this.id = 0,
-      this.burstTime = 0,
-      this.endBurstTime = 0,
-      this.priority = 0,
-      this.waitingTime = 0});
-}
-
-class OutputProcess {
-  int id;
-  int endBurstTime;
-  double waitingTime;
-  OutputProcess({this.id = 0, this.endBurstTime = 0, this.waitingTime = 0});
-}
-
-class AvgOutputProcess {
-  double waitingTime;
-  int id;
-  int completionTime;
-  int burstTime;
-  AvgOutputProcess({
-    this.id = 0,
-    this.burstTime = 0,
-    this.completionTime = 0,
-  });
+  int arrivalTime;
+  PreemPriorityInputProcess(
+      {this.id = 0, this.burstTime = 0, this.priority = 0, this.arrivalTime});
 }
 
 class PreemptivePriority {
   var avgWaitingTime;
-  var timeQuantum;
-  List<InputProcess> input = [];
-  List<OutputProcess> output = [];
-  List<AvgOutputProcess> avgOutput = [];
+  List<Process> output = [];
 
-  PreemptivePriority({List<InputProcess> input, int timeQuantum}) {
+  PreemptivePriority({List<PreemPriorityInputProcess> input}) {
+    List<PreemPriorityInputProcess> victimList = [];
     input.forEach((element) {
-      avgOutput
-          .add(AvgOutputProcess(id: element.id, burstTime: element.burstTime));
+      victimList.add(PreemPriorityInputProcess(
+          arrivalTime: element.arrivalTime,
+          burstTime: element.burstTime,
+          priority: element.priority,
+          id: element.id));
     });
-    output = prepareOutput(input, timeQuantum);
-    avgOutput = prepareAvgOutputList(output, avgOutput);
-    avgWaitingTime = calculateAvgWaitingTime(avgOutput);
+    output = calculateOutput(victimList);
+    avgWaitingTime = calculateAvgWaitingTime(input);
   }
 
-  List<OutputProcess> prepareOutput(List<InputProcess> input, int timeQuantum) {
-    List<OutputProcess> output = [];
+  List<Process> calculateOutput(List<PreemPriorityInputProcess> input) {
+    List<Process> output = [];
 
-    int currentTime = 0;
-    int lastBurstTime = 0;
-    input.sort((a, b) => a.priority.compareTo(b.priority));
-    for (int i = 0; i < input.length; i++) {
-      if (input[i].burstTime != 0) {
-        if (i != input.length - 1 &&
-                input[i].priority != input[i + 1].priority ||
-            i == input.length - 1) {
-          output.add(OutputProcess(
-              id: input[i].id,
-              endBurstTime: lastBurstTime + input[i].burstTime));
-          currentTime += input[i].burstTime;
-          lastBurstTime += input[i].burstTime;
-          input[i].burstTime = 0;
-        } else {
-          List<InputProcess> roundRobinList = [];
-          roundRobinList.add(input[i]);
-          if (i != input.length - 1) {
-            for (int j = i + 1; j < input.length; j++) {
-              if (input[j].priority == input[i].priority) {
-                roundRobinList.add(input[j]);
-              }
-            }
+    int cpuTime = 0;
 
-            var burstTimeSum = currentTime;
-            roundRobinList.forEach((element) {
-              burstTimeSum += element.burstTime;
-            });
-            while (currentTime < burstTimeSum) {
-              for (int k = 0; k < roundRobinList.length; k++) {
-                if (roundRobinList[k].burstTime >= timeQuantum) {
-                  output.add(OutputProcess(
-                      id: roundRobinList[k].id,
-                      endBurstTime: lastBurstTime + timeQuantum));
-                  lastBurstTime += timeQuantum;
-                  input[k + i].burstTime -= timeQuantum;
-                  
-                  currentTime += timeQuantum;
-                } else if (roundRobinList[k].burstTime != 0) {
-                  output.add(OutputProcess(
-                      id: roundRobinList[k].id,
-                      endBurstTime:
-                          lastBurstTime + roundRobinList[k].burstTime));
-                  lastBurstTime += roundRobinList[k].burstTime;
-                  currentTime += roundRobinList[k].burstTime;
-                  input[k + i].burstTime = 0;
-                  
-                }
-              }
-            }
-          }
-        }
+    while (input.length > 0) {
+      int minArrival = input.map((p) => p.arrivalTime).toList().reduce(min);
+      if (minArrival > cpuTime) {
+        cpuTime = minArrival;
+        output.add(Process(processTitle: "idle", endTime: cpuTime));
+      }
+
+      List<PreemPriorityInputProcess> minArrivalProcesses =
+          input.where((p) => p.arrivalTime <= cpuTime).toList();
+      int highestPriority = minArrivalProcesses
+          .map((p) => p.priority)
+          .toList()
+          .reduce(min); //lowest num => highest priority
+      PreemPriorityInputProcess process =
+          minArrivalProcesses.firstWhere((p) => p.priority == highestPriority);
+
+      // finding processes with higher priority
+      // then finding the earlies process among them
+      int interruptTime = -1;
+      List<PreemPriorityInputProcess> higherPriorityProcesses =
+          input.where((p) => p.priority < process.priority).toList();
+      if (higherPriorityProcesses.length > 0) {
+        int minArrival2 = higherPriorityProcesses
+            .map((p) => p.arrivalTime)
+            .toList()
+            .reduce(min);
+        PreemPriorityInputProcess earliestProcess = higherPriorityProcesses
+            .firstWhere((p) => p.arrivalTime == minArrival2);
+        interruptTime = earliestProcess.arrivalTime;
+      }
+
+      if (interruptTime == -1 || cpuTime + process.burstTime <= interruptTime) {
+        cpuTime += process.burstTime;
+        output.add(
+            Process(processTitle: process.id.toString(), endTime: cpuTime));
+        int index = input.indexWhere((p) => p.id == process.id);
+        input.removeAt(index);
+      } else {
+        int elapsedTime = interruptTime - cpuTime;
+        cpuTime = interruptTime;
+        output.add(
+            Process(processTitle: process.id.toString(), endTime: cpuTime));
+        process.burstTime -= elapsedTime;
       }
     }
-   
+
     return output;
   }
 
-  List<AvgOutputProcess> prepareAvgOutputList(
-      List<OutputProcess> input, List<AvgOutputProcess> input2) {
-    input.sort((a, b) => a.endBurstTime.compareTo(b.endBurstTime));
-    var inReverse = input.reversed;
-    var reversed = inReverse.toList();
-
-    for (var i = 0; i < input2.length; i++) {
-      int index;
-      index = reversed.indexWhere((element) => element.id == input2[i].id);
-      input2[i].completionTime = reversed[index].endBurstTime;
-      input2[i].waitingTime =
-          (input2[i].completionTime - input2[i].burstTime).toDouble();
+  double calculateAvgWaitingTime(List<PreemPriorityInputProcess> input) {
+    double avg = 0;
+    for (int i = 0; i < input.length; i++) {
+      avg += output
+              .lastWhere(
+                  (element) => element.processTitle == input[i].id.toString())
+              .endTime -
+          input[i].burstTime -
+          input[i].arrivalTime;
     }
-    return input2;
-  }
-
-  double calculateAvgWaitingTime(List<AvgOutputProcess> input) {
-    var sum = 0.0;
-    for (var i = 0; i < input.length; i++) {
-      sum = sum + input[i].waitingTime;
-    }
-    return sum / (input.length);
+    return avg / input.length;
   }
 }

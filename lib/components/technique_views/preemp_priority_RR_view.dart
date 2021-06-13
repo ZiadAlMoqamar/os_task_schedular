@@ -1,24 +1,27 @@
 import 'package:gantt_chart/classes/process.dart';
-import 'package:gantt_chart/logic/non_preemp_priority_logic.dart'
-    as non_preem_priority;
+import 'package:gantt_chart/logic/preemp_priority_RR_logic.dart'
+    as preemp_priority;
 import 'package:flutter/material.dart';
 
 import '../chart.dart';
 
-class NonPreemPriorityUI extends StatefulWidget {
+class PreempPriorityWRR extends StatefulWidget {
   @override
-  _NonPreemPriorityUIState createState() => _NonPreemPriorityUIState();
+  _PreempPriorityWRRState createState() => _PreempPriorityWRRState();
 }
 
-class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
+class _PreempPriorityWRRState extends State<PreempPriorityWRR> {
   TextEditingController numberOfProcesses = TextEditingController();
-  bool idError = false;
+  TextEditingController quantumField = TextEditingController();
   ScrollController _scrollController = ScrollController();
   bool numberOfProcessesValidation = false;
+  bool quantumValidation = false;
 
+  bool idError = false;
+  bool quantumCheckBox = true;
   int numberOfFields = 4;
   var controllers;
-  List<non_preem_priority.NonPremPriorityInputProcess> input = [];
+  List<preemp_priority.PreemPriorityInputProcess> input = [];
   void generateInput() {
     input = [];
     int numOfProcesses = numberOfProcesses.text.length == 0
@@ -27,7 +30,7 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
             ? 0
             : int.tryParse(numberOfProcesses.text);
     for (var i = 0; i < numOfProcesses; i++) {
-      input.add(non_preem_priority.NonPremPriorityInputProcess(
+      input.add(preemp_priority.PreemPriorityInputProcess(
           id: i, burstTime: 0, priority: 0));
     }
   }
@@ -69,6 +72,7 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
         : double.tryParse(numberOfProcesses.text) == null
             ? 0
             : int.tryParse(numberOfProcesses.text);
+
     for (var i = 0; i < numOfProcesses; i++) {
       for (var j = 0; j < numberOfFields; j++) {
         controllers[i][j].clear();
@@ -82,7 +86,6 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
         : double.tryParse(numberOfProcesses.text) == null
             ? 0
             : int.tryParse(numberOfProcesses.text);
-
     for (var i = 0; i < numOfProcesses; i++) {
       for (var j = 0; j < numberOfFields; j++) {
         controllers[i][j].clear();
@@ -103,7 +106,7 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
         decoration: InputDecoration(
           fillColor: Color(0xfff0f2f5),
           filled: true,
-           errorText: valid
+          errorText: valid
               ? controller.text.length == 0
                   ? 'Empty'
                   : double.tryParse(controller.text) == null
@@ -193,6 +196,45 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
             ],
           ),
           SizedBox(height: 25),
+
+          Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(width: 150, child: Text('Quantum:')),
+                SizedBox(width: 15),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 60,
+                      child: TextField(
+                        decoration: InputDecoration(
+                          fillColor: Color(0xfff0f2f5),
+                          filled: true,
+                          border: OutlineInputBorder(),
+                          errorText: quantumValidation
+                              ? quantumField.text.length == 0
+                                  ? 'Empty'
+                                  : double.tryParse(quantumField.text) == null
+                                      ? 'Invalid'
+                                      : double.tryParse(quantumField.text) <= 0
+                                          ? 'Invalid'
+                                          : null
+                              : null,
+                        ),
+                        textAlign: TextAlign.center,
+                        controller: quantumField,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 25),
+
           // titles
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -249,8 +291,8 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
           Container(
               height: 250,
               child: Scrollbar(
-                isAlwaysShown: true,
                 controller: _scrollController,
+                isAlwaysShown: true,
                 thickness: 14,
                 child: ListView.builder(
                     controller: _scrollController,
@@ -283,13 +325,13 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
                           SizedBox(width: 25),
                           inputField((s) {
                             setState(() {
-                              input[index].priority = int.tryParse(s);
+                              input[index].priority = int.parse(s);
                             });
                           }, controllers[index][2], validators[index][2]),
                           SizedBox(width: 25),
                           inputField((s) {
                             setState(() {
-                              input[index].arrivalTime = int.tryParse(s);
+                              input[index].arrivalTime = int.parse(s);
                             });
                           }, controllers[index][3], validators[index][3]),
                         ],
@@ -297,15 +339,11 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
                     }),
               )),
           // function buttons
-          SizedBox(
-            height: 25,
-          ),
+          SizedBox(height: 25),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                // margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-
                 child: Row(
                   children: [
                     SizedBox(width: 40),
@@ -331,6 +369,7 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
                           go = true;
                           idError = false;
                           numberOfProcessesValidation = true;
+                          quantumValidation = true;
                         });
                         int numOfProcesses = numberOfProcesses.text.length == 0
                             ? 0
@@ -344,7 +383,8 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
                                     null ||
                                 double.tryParse(controllers[i][j].text)
                                     .isNegative ||
-                                double.tryParse(controllers[i][1].text) == 0) {
+                                double.tryParse(controllers[i][1].text) == 0 ||
+                                double.tryParse(quantumField.text) <= 0) {
                               setState(() {
                                 validators[i][j] = true;
                                 go = false;
@@ -369,13 +409,15 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
                             }
                           }
                         }
-                        List<non_preem_priority.NonPremPriorityInputProcess>
+                        List<preemp_priority.PreemPriorityInputProcess>
                             victimList = [];
                         if (go && numberOfProcesses.text.length != 0) {
                           setState(() {
                             victimList.addAll(input);
-                            obj = non_preem_priority.NonPreemptivePriority(
-                                victimList);
+                            obj = preemp_priority.PreemptivePriorityWRR(
+                              input: victimList,
+                              timeQuantum: int.parse(quantumField.text),
+                            );
                             output = obj.output;
                             avgWaitingTime = obj.avgWaitingTime;
                           });
@@ -404,6 +446,7 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
                           generateInput();
                           clearControllers();
                           numberOfProcesses.clear();
+                          quantumField.clear();
                           output = [];
                         });
                       },

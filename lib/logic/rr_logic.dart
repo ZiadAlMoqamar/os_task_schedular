@@ -2,117 +2,110 @@
 
 import 'dart:core';
 
-class InputProcess {
+import 'package:gantt_chart/classes/process.dart';
+import 'dart:math';
+
+class RRInputProcess {
   int id;
   int burstTime;
-  InputProcess({
-    this.id = 0,
-    this.burstTime = 0,
-  });
-}
-
-class OutputProcess {
-  int id;
-  int endBurstTime;
-  double waitingTime;
-  OutputProcess({this.id = 0, this.endBurstTime = 0, this.waitingTime = 0});
-}
-
-class AvgOutputProcess {
-  double waitingTime;
-  int id;
-  int completionTime;
-  int burstTime;
-  AvgOutputProcess({
-    this.id = 0,
-    this.burstTime = 0,
-    this.completionTime = 0,
-  });
+  int arrivalTime;
+  RRInputProcess({this.id = 0, this.burstTime = 0, this.arrivalTime});
 }
 
 class RR {
-  var avgWaitingTime;
-  var timeQuantum;
-  List<InputProcess> input = [];
-  List<OutputProcess> output = [];
-  List<AvgOutputProcess> avgOutput = [];
+  double avgWaitingTime;
+  List<Process> output = [];
 
-  RR({List<InputProcess> input, int timeQuantum}) {
+  RR({List<RRInputProcess> input, int timeQuantum}) {
+    List<RRInputProcess> victimInput = [];
     input.forEach((element) {
-      avgOutput
-          .add(AvgOutputProcess(id: element.id, burstTime: element.burstTime));
+      victimInput.add(RRInputProcess(
+          arrivalTime: element.arrivalTime,
+          burstTime: element.burstTime,
+          
+          id: element.id));
     });
-    output = prepareOutput(input, timeQuantum);
-    avgOutput = prepareAvgOutputList(output, avgOutput);
-    avgWaitingTime = calculateAvgWaitingTime(avgOutput);
+    output = calculateOutput(victimInput, timeQuantum);
+    avgWaitingTime = calculateAvgWaitingTime(input);
   }
 
-  List<OutputProcess> prepareOutput(List<InputProcess> input, int timeQuantum) {
-    List<OutputProcess> output = [];
-    var burstTimeSum = 0;
-    int currentTime = 0;
-    int lastBurstTime = 0;
-    input.forEach((element) {
-      burstTimeSum += element.burstTime;
-    });
+  List<Process> calculateOutput(List<RRInputProcess> input, int timeQuantum) {
+    List<Process> output = [];
+    //sort the array based on arrivalTime, if equal then based on id
+    input.sort((a, b) => a.arrivalTime > b.arrivalTime
+        ? 1
+        : (a.arrivalTime == b.arrivalTime && a.id > b.id)
+            ? 1
+            : -1);
 
-    while (currentTime < burstTimeSum) {
-      // input.forEach((element) {
-      //   if(element.burstTime>=timeQuantum){
-      //     output.add(OutputProcess(id: element.id, endBurstTime: lastBurstTime+timeQuantum));
-      //     lastBurstTime += lastBurstTime + timeQuantum;
-      //     element.burstTime -= timeQuantum;
-      //     currentTime += timeQuantum;
-      //   }
-      //   else{
-      //     output.add(OutputProcess(id: element.id, endBurstTime: lastBurstTime+element.burstTime));
-      //     lastBurstTime += lastBurstTime + element.burstTime;
-      //     currentTime += element.burstTime;
-      //     element.burstTime=0;
-      //   }
-      //  });
-      for (int i = 0; i < input.length; i++) {
-        if (input[i].burstTime >= timeQuantum) {
-          output.add(OutputProcess(
-              id: input[i].id, endBurstTime: lastBurstTime + timeQuantum));
-          lastBurstTime += timeQuantum;
-          input[i].burstTime -= timeQuantum;
-          currentTime += timeQuantum;
-        } else if (input[i].burstTime != 0) {
-          output.add(OutputProcess(
-              id: input[i].id,
-              endBurstTime: lastBurstTime + input[i].burstTime));
-          lastBurstTime += input[i].burstTime;
-          currentTime += input[i].burstTime;
-          input[i].burstTime = 0;
+    int cpuTime = 0;
+
+    while (input.length > 0) {
+      int minArrival = (input.map((p) => p.arrivalTime)).toList().reduce(min);
+      if (minArrival > cpuTime) {
+        cpuTime = minArrival;
+        output.add(Process(processTitle: 'idle', endTime: cpuTime));
+      }
+      List<RRInputProcess> activeProcessesArray =
+          input.where((p) => p.arrivalTime <= cpuTime).toList();
+
+      //applying the RR cycles
+      while (activeProcessesArray.length != 0) {
+        RRInputProcess process = activeProcessesArray[0];
+        if (process.burstTime > timeQuantum) {
+          cpuTime += timeQuantum;
+          output.add(
+              Process(processTitle: process.id.toString(), endTime: cpuTime));
+          process.burstTime -= timeQuantum;
+        } else {
+          cpuTime += process.burstTime;
+          output.add(
+              Process(processTitle: process.id.toString(), endTime: cpuTime));
+          process.burstTime = 0;
+        }
+
+        //checking if another process from the input processes has arrived during the last RR cycle
+        input.forEach((p) {
+          if (p.arrivalTime <= cpuTime && !activeProcessesArray.contains(p)) {
+            activeProcessesArray.add(p);
+          }
+        });
+
+        //removing the process from the "active processes" array and input array if it has finished its burst time
+        if (process.burstTime == 0) {
+          int index =
+              activeProcessesArray.indexWhere((p) => p.id == process.id);
+          activeProcessesArray.removeAt(index);
+          index = input.indexWhere(((p) => p.id == process.id));
+          input.removeAt(index);
+        } else {
+          activeProcessesArray.removeAt(0); //remove 1st process
+          activeProcessesArray.add(process); //add it to the back
         }
       }
-      // input.removeWhere((element) => element.burstTime==0);
     }
+
+//joining processes of the same id together (they are separated from RR cycles)
+    for (int i = 0; i < output.length - 1; i++) {
+      if (output[i].processTitle == output[i + 1].processTitle) {
+        output.removeAt(i);
+        i--;
+      }
+    }
+
     return output;
   }
 
-  List<AvgOutputProcess> prepareAvgOutputList(
-      List<OutputProcess> input, List<AvgOutputProcess> input2) {
-    input.sort((a, b) => a.endBurstTime.compareTo(b.endBurstTime));
-    var inReverse = input.reversed;
-    var reversed = inReverse.toList();
-
-    for (var i = 0; i < input2.length; i++) {
-      int index;
-      index = reversed.indexWhere((element) => element.id == input2[i].id);
-      input2[i].completionTime = reversed[index].endBurstTime;
-      input2[i].waitingTime =
-          (input2[i].completionTime - input2[i].burstTime).toDouble();
+  double calculateAvgWaitingTime(List<RRInputProcess> input) {
+    double avg = 0;
+    for (int i = 0; i < input.length; i++) {
+      avg += output
+              .lastWhere(
+                  (element) => element.processTitle == input[i].id.toString())
+              .endTime -
+          input[i].burstTime -
+          input[i].arrivalTime;
     }
-    return input2;
-  }
-
-  double calculateAvgWaitingTime(List<AvgOutputProcess> input) {
-    var sum = 0.0;
-    for (var i = 0; i < input.length; i++) {
-      sum = sum + input[i].waitingTime;
-    }
-    return sum / (input.length);
+    return avg / input.length;
   }
 }

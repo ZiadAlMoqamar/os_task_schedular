@@ -1,10 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gantt_chart/screens/InputScreen/Input_screen.dart';
 
-void main()  {
+void main() {
   runApp(MyApp());
 }
 
@@ -13,7 +12,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'gantt_chart',
+      debugShowCheckedModeBanner: false,
+      title: 'OS_task_scheduler',
       home: MyHomePage(),
     );
   }
@@ -32,13 +32,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  bool rightShift = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xffffffff),
-      // appBar: AppBar(
-      //   title: Text('gantt_chart'),
-      // ),
       body: InputScreen(technique: widget.technique, change: changeTechnique),
     );
   }

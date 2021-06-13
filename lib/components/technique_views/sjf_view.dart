@@ -1,24 +1,24 @@
 import 'package:gantt_chart/classes/process.dart';
-import 'package:gantt_chart/logic/non_preemp_priority_logic.dart'
-    as non_preem_priority;
+import 'package:gantt_chart/logic/sjf_logic.dart' as sjf;
 import 'package:flutter/material.dart';
 
 import '../chart.dart';
 
-class NonPreemPriorityUI extends StatefulWidget {
+class SJFUI extends StatefulWidget {
   @override
-  _NonPreemPriorityUIState createState() => _NonPreemPriorityUIState();
+  _SJFUIState createState() => _SJFUIState();
 }
 
-class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
+class _SJFUIState extends State<SJFUI> {
   TextEditingController numberOfProcesses = TextEditingController();
+  TextEditingController quantumField = TextEditingController();
   bool idError = false;
   ScrollController _scrollController = ScrollController();
   bool numberOfProcessesValidation = false;
 
-  int numberOfFields = 4;
+  int numberOfFields = 3;
   var controllers;
-  List<non_preem_priority.NonPremPriorityInputProcess> input = [];
+  List<sjf.SJFInputProcess> input = [];
   void generateInput() {
     input = [];
     int numOfProcesses = numberOfProcesses.text.length == 0
@@ -27,8 +27,7 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
             ? 0
             : int.tryParse(numberOfProcesses.text);
     for (var i = 0; i < numOfProcesses; i++) {
-      input.add(non_preem_priority.NonPremPriorityInputProcess(
-          id: i, burstTime: 0, priority: 0));
+      input.add(sjf.SJFInputProcess(id: i, burstTime: 0));
     }
   }
 
@@ -69,6 +68,7 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
         : double.tryParse(numberOfProcesses.text) == null
             ? 0
             : int.tryParse(numberOfProcesses.text);
+
     for (var i = 0; i < numOfProcesses; i++) {
       for (var j = 0; j < numberOfFields; j++) {
         controllers[i][j].clear();
@@ -82,7 +82,6 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
         : double.tryParse(numberOfProcesses.text) == null
             ? 0
             : int.tryParse(numberOfProcesses.text);
-
     for (var i = 0; i < numOfProcesses; i++) {
       for (var j = 0; j < numberOfFields; j++) {
         controllers[i][j].clear();
@@ -103,7 +102,7 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
         decoration: InputDecoration(
           fillColor: Color(0xfff0f2f5),
           filled: true,
-           errorText: valid
+          errorText: valid
               ? controller.text.length == 0
                   ? 'Empty'
                   : double.tryParse(controller.text) == null
@@ -193,57 +192,46 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
             ],
           ),
           SizedBox(height: 25),
+
           // titles
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                child: Row(
-                  children: [
-                    Container(
-                        width: 60,
-                        alignment: Alignment.center,
-                        child: Text(
-                          '#',
-                          textAlign: TextAlign.center,
-                        )),
-                    SizedBox(width: 25),
-                    Container(
-                        width: 60,
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Id',
-                          textAlign: TextAlign.center,
-                        )),
-                    SizedBox(width: 25),
-                    Container(
-                        width: 60,
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Burst time',
-                          textAlign: TextAlign.center,
-                        )),
-                    SizedBox(width: 25),
-                    Container(
-                        width: 60,
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Priority',
-                          textAlign: TextAlign.center,
-                        )),
-                    SizedBox(width: 25),
-                    Container(
-                        width: 60,
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Arrival time',
-                          textAlign: TextAlign.center,
-                        )),
-                  ],
-                ),
-              ),
-            ],
+          Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                    width: 60,
+                    alignment: Alignment.center,
+                    child: Text(
+                      '#',
+                      textAlign: TextAlign.center,
+                    )),
+                SizedBox(width: 25),
+                Container(
+                    width: 60,
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Id',
+                      textAlign: TextAlign.center,
+                    )),
+                SizedBox(width: 25),
+                Container(
+                    width: 60,
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Burst time',
+                      textAlign: TextAlign.center,
+                    )),
+                SizedBox(width: 25),
+                Container(
+                    width: 60,
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Arrival time',
+                      textAlign: TextAlign.center,
+                    )),
+              ],
+            ),
           ),
           // user input
           Container(
@@ -260,7 +248,6 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
                     itemBuilder: (context, index) {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
                             width: 60,
@@ -283,15 +270,9 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
                           SizedBox(width: 25),
                           inputField((s) {
                             setState(() {
-                              input[index].priority = int.tryParse(s);
+                              input[index].arrivalTime = int.parse(s);
                             });
                           }, controllers[index][2], validators[index][2]),
-                          SizedBox(width: 25),
-                          inputField((s) {
-                            setState(() {
-                              input[index].arrivalTime = int.tryParse(s);
-                            });
-                          }, controllers[index][3], validators[index][3]),
                         ],
                       );
                     }),
@@ -302,10 +283,9 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
           ),
           Row(
             mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                // margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-
                 child: Row(
                   children: [
                     SizedBox(width: 40),
@@ -343,7 +323,7 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
                                 double.tryParse(controllers[i][j].text) ==
                                     null ||
                                 double.tryParse(controllers[i][j].text)
-                                    .isNegative ||
+                                    .isNegative||
                                 double.tryParse(controllers[i][1].text) == 0) {
                               setState(() {
                                 validators[i][j] = true;
@@ -369,13 +349,11 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
                             }
                           }
                         }
-                        List<non_preem_priority.NonPremPriorityInputProcess>
-                            victimList = [];
+                        List<sjf.SJFInputProcess> victimList = [];
                         if (go && numberOfProcesses.text.length != 0) {
                           setState(() {
                             victimList.addAll(input);
-                            obj = non_preem_priority.NonPreemptivePriority(
-                                victimList);
+                            obj = sjf.SJF(victimList);
                             output = obj.output;
                             avgWaitingTime = obj.avgWaitingTime;
                           });
@@ -404,6 +382,7 @@ class _NonPreemPriorityUIState extends State<NonPreemPriorityUI> {
                           generateInput();
                           clearControllers();
                           numberOfProcesses.clear();
+                          quantumField.clear();
                           output = [];
                         });
                       },

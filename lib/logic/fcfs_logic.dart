@@ -1,63 +1,67 @@
 import 'dart:core';
 
-class InputProcess {
+import 'package:gantt_chart/classes/process.dart';
+import 'dart:math';
+
+class FCFSInputProcess {
   int id;
   int burstTime;
-  int endBurstTime;
-  double waitingTime;
-  InputProcess(
-      {this.id = 0,
-      this.burstTime = 0,
-      this.endBurstTime = 0,
-      this.waitingTime = 0});
+  int arrivalTime;
+  FCFSInputProcess({this.id = 0, this.burstTime = 0, this.arrivalTime});
 }
 
 class FCFS {
   var avgWaitingTime;
-  List<InputProcess> input = [];
-  List<InputProcess> output = [];
+  List<Process> output = [];
 
-  FCFS(List<InputProcess> input) {
-    output = prepareOutput(input);
-    avgWaitingTime = calculateAvgWaitingTime(output);
-  }
-  List<InputProcess> enterInput(List<int> input) {
-    List<InputProcess> output = [];
-    for (var i = 0; i < input.length; i++) {
-      output.add(InputProcess(burstTime: input[i]));
-    }
-    return output;
-  }
-
-  List<InputProcess> prepareOutput(List<InputProcess> input) {
-    List<InputProcess> output = [];
-    for (var i = 0; i < input.length; i++) {
-      output.add(InputProcess(
-          id: input[i].id,
-          burstTime: input[i].burstTime,
-          waitingTime: calculateProcessWaitingTime(input, i),
-          endBurstTime: input[i].burstTime +
-              calculateProcessWaitingTime(input, i).toInt()));
-    }
-    return output;
+  FCFS(List<FCFSInputProcess> input) {
+    List<FCFSInputProcess> victimInput = [];
+    input.forEach((element) {
+      victimInput.add(FCFSInputProcess(
+          arrivalTime: element.arrivalTime,
+          burstTime: element.burstTime,
+          id: element.id));
+    });
+    output = calculateOutput(victimInput);
+    avgWaitingTime = calculateAvgWaitingTime(input);
   }
 
-  double calculateProcessWaitingTime(
-      List<InputProcess> input, int processIndex) {
-    var output = 0.0;
-    if (processIndex != 0) {
-      for (var i = processIndex - 1; i >= 0; i--) {
-        output += input[i].burstTime;
+  List<Process> calculateOutput(List<FCFSInputProcess> input) {
+    List<Process> output = [];
+    int cpuTime = 0;
+
+    while (input.length > 0) {
+      int minArrival = input.map((p) => p.arrivalTime).toList().reduce(min);
+      if (minArrival > cpuTime) {
+        cpuTime = minArrival;
+        output.add(Process(processTitle: "idle", endTime: cpuTime));
       }
+
+      FCFSInputProcess process =
+          input.firstWhere((p) => p.arrivalTime == minArrival);
+
+      cpuTime += process.burstTime;
+      output
+          .add(Process(processTitle: process.id.toString(), endTime: cpuTime));
+      int index = input.indexWhere((p) => p.id == process.id);
+      input.removeAt(index);
     }
+
     return output;
   }
 
-  double calculateAvgWaitingTime(List<InputProcess> input) {
-    var sum = 0.0;
-    for (var i = 0; i < input.length; i++) {
-      sum = sum + input[i].waitingTime;
+  double calculateAvgWaitingTime(List<FCFSInputProcess> input) {
+    double avg = 0;
+    for (int i = 0; i < input.length; i++) {
+      avg += output
+              .lastWhere(
+                  (element) => element.processTitle == input[i].id.toString())
+              .endTime
+              .toDouble() -
+          input[i].burstTime.toDouble() -
+          input[i].arrivalTime.toDouble();
     }
-    return sum / (input.length);
+
+    return avg / input.length;
   }
 }

@@ -1,12 +1,10 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:gantt_chart/classes/process.dart';
-import 'package:gantt_chart/components/chart.dart';
 import 'package:gantt_chart/components/technique_views/fcfs_view.dart';
 import 'package:gantt_chart/components/technique_views/non_preem_priority_view.dart';
+import 'package:gantt_chart/components/technique_views/preemp_priority_RR_view.dart';
 import 'package:gantt_chart/components/technique_views/preemp_priority_view.dart';
 import 'package:gantt_chart/components/technique_views/rr_view.dart';
-import 'package:gantt_chart/components/technique_views/sjf.dart';
+import 'package:gantt_chart/components/technique_views/sjf_view.dart';
 import 'package:gantt_chart/components/technique_views/srtf_view.dart';
 
 class InputScreen extends StatefulWidget {
@@ -19,32 +17,50 @@ class InputScreen extends StatefulWidget {
 }
 
 class _InputScreenState extends State<InputScreen> {
+  ScrollController _scrollController = ScrollController();
   List<String> availableTechniques = [
     'FCFS',
     'Preemptive SJF',
     'Non-preemptive SJF',
     'Preemptive priority',
+    'Priority with Round Robin',
     'Non-preemptive priority',
     'Round Robin'
   ];
   Widget RadioBtn(String selectedTechnique) {
-    return Row(
-      children: [
-        Radio(
-            value: selectedTechnique,
-            groupValue: widget.technique,
-            onChanged: (e) {
-              setState(() {
-                widget.change(selectedTechnique);
-                widget.technique = selectedTechnique;
-              });
-            }),
-        Expanded(
-            child: Text(
-          selectedTechnique,
-          overflow: TextOverflow.clip,
-        ))
-      ],
+    return InkWell(
+      hoverColor: Colors.transparent,
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      onTap: () {
+        setState(() {
+          widget.change(selectedTechnique);
+          widget.technique = selectedTechnique;
+        });
+      },
+      child: Row(
+        children: [
+          Radio(
+              value: selectedTechnique,
+              groupValue: widget.technique,
+              onChanged: (e) {
+                setState(() {
+                  widget.change(selectedTechnique);
+                  widget.technique = selectedTechnique;
+                });
+              }),
+          Expanded(
+              child: Text(
+            selectedTechnique,
+            style: TextStyle(
+              color: widget.technique == selectedTechnique
+                  ? Colors.blueAccent
+                  : null,
+            ),
+            overflow: TextOverflow.clip,
+          ))
+        ],
+      ),
     );
   }
 
@@ -61,6 +77,8 @@ class _InputScreenState extends State<InputScreen> {
         return NonPreemPriorityUI();
       case 'Round Robin':
         return RoundRobinUI();
+      case 'Priority with Round Robin':
+        return PreempPriorityWRR();
       case 'Preemptive priority':
         return PreempPriority();
       default:
@@ -85,31 +103,35 @@ class _InputScreenState extends State<InputScreen> {
               ),
             ),
           ),
-          child: Expanded(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                      Text(
-                        'Choose technique',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                    Text(
+                      'Choose Technique',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                      SizedBox(height: 5),
-                    ] +
-                    availableTechniques.map((e) => RadioBtn(e)).toList()),
-          ),
+                    ),
+                    SizedBox(height: 10),
+                  ] +
+                  availableTechniques.map((e) => RadioBtn(e)).toList()),
         ),
         Expanded(
-          child: Transform.translate(
-            offset: Offset(-100, 0),
+          child: Scrollbar(
+            isAlwaysShown: true,
+            controller: _scrollController,
             child: SingleChildScrollView(
+              controller: _scrollController,
               child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   child: selectTechnequeView()),
             ),
           ),
         ),
+        Container(
+          width: MediaQuery.of(context).size.width / 8,
+        )
       ],
     );
   }

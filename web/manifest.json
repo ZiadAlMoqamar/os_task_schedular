@@ -1,6 +1,6 @@
 {
-    "name": "gantt_chart",
-    "short_name": "gantt_chart",
+    "name": "OS_Task_Scheduler",
+    "short_name": "OS_Task_Scheduler",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

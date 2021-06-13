@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(gantt_chart LANGUAGES CXX)
 
-set(BINARY_NAME "gantt_chart")
+set(BINARY_NAME "OS_Task_Scheduler")
 
 cmake_policy(SET CMP0063 NEW)
 

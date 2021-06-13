@@ -2,57 +2,70 @@
 
 import 'dart:core';
 
-class InputProcess {
+import 'package:gantt_chart/classes/process.dart';
+import 'dart:math';
+
+class SJFInputProcess {
   int id;
   int burstTime;
-  int endBurstTime;
-  double waitingTime;
-  InputProcess(
-      {this.id = 0,
-      this.burstTime = 0,
-      this.endBurstTime = 0,
-      this.waitingTime = 0});
+  int arrivalTime;
+  SJFInputProcess({this.id = 0, this.burstTime = 0, this.arrivalTime});
 }
+
 class SJF {
   var avgWaitingTime;
-  List<InputProcess> input = [];
-  List<InputProcess> output = [];
+  List<Process> output = [];
 
-  SJF(List<InputProcess> input) {
-    output = prepareOutput(input);
-    avgWaitingTime = calculateAvgWaitingTime(output);
+  SJF(List<SJFInputProcess> input) {
+    List<SJFInputProcess> victimInput = [];
+    input.forEach((element) {
+      victimInput.add(SJFInputProcess(
+          arrivalTime: element.arrivalTime,
+          burstTime: element.burstTime,
+          id: element.id));
+    });
+    output = calculateOutput(victimInput);
+    avgWaitingTime = calculateAvgWaitingTime(input);
   }
 
-  List<InputProcess> prepareOutput(List<InputProcess> input) {
-    input.sort((a, b) => a.burstTime.compareTo(b.burstTime));
-    List<InputProcess> output = [];
-    for (var i = 0; i < input.length; i++) {
-      output.add(InputProcess(
-          id: input[i].id,
-          burstTime: input[i].burstTime,
-          waitingTime: calculateProcessWaitingTime(input, i),
-          endBurstTime: input[i].burstTime +
-              calculateProcessWaitingTime(input, i).toInt()));
-    }
-    return output;
-  }
+  List<Process> calculateOutput(List<SJFInputProcess> input) {
+    List<Process> output = [];
+    int cpuTime = 0;
 
-  double calculateProcessWaitingTime(
-      List<InputProcess> input, int processIndex) {
-    var output = 0.0;
-    if (processIndex != 0) {
-      for (var i = processIndex - 1; i >= 0; i--) {
-        output += input[i].burstTime;
+    while (input.length > 0) {
+      int minArrival = input.map((p) => p.arrivalTime).toList().reduce(min);
+      if (minArrival > cpuTime) {
+        cpuTime = minArrival;
+        output.add(Process(processTitle: "idle", endTime: cpuTime));
       }
+
+      List<SJFInputProcess> minArrivalProcesses =
+          input.where((p) => p.arrivalTime <= cpuTime).toList();
+      int minBurst =
+          minArrivalProcesses.map((p) => p.burstTime).toList().reduce(min);
+      SJFInputProcess process =
+          minArrivalProcesses.firstWhere((p) => p.burstTime <= minBurst);
+
+      cpuTime += process.burstTime;
+      output
+          .add(Process(processTitle: process.id.toString(), endTime: cpuTime));
+      int index = input.indexWhere((p) => p.id == process.id);
+      input.removeAt(index);
     }
+
     return output;
   }
 
-  double calculateAvgWaitingTime(List<InputProcess> input) {
-    var sum = 0.0;
-    for (var i = 0; i < input.length; i++) {
-      sum = sum + input[i].waitingTime;
+  double calculateAvgWaitingTime(List<SJFInputProcess> input) {
+    double avg = 0;
+    for (int i = 0; i < input.length; i++) {
+      avg += output
+              .lastWhere(
+                  (element) => element.processTitle == input[i].id.toString())
+              .endTime -
+          input[i].burstTime -
+          input[i].arrivalTime;
     }
-    return sum / (input.length);
+    return avg / input.length;
   }
 }
